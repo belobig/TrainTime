@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="assets/css/bootstrap.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+	<title>TrainTime</title>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="jumbotron text-center black">
+				<h1>TrainTime</h1>
+				<h3>Schedule Yer Trains</h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="panel panel-default panel-primary">
+				<div class="panel-heading">
+					<strong>Current Train Schedule</strong>
+					<div class="text-center">Current Time: <span id="clock">loading...</span></div>
+				</div>
+				<div class="panel-body">
+					<table class="table" id="trainTable">
+						<tr>
+							<th>Train Name</th>
+							<th>Destination</th>
+							<th>First Train</th>
+							<th>Frequency (min)</th>
+							<th>Next Arrival</th>
+							<th>Minutes Away</th>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="panel panel-default panel-primary">
+				<div class="panel-heading">
+					<strong>Add Train</strong>
+				</div>
+				<div class="panel-body">
+					<form>
+						<div class="form-group">
+							<label for="trainName">Train Name</label>
+							<input type="text" class="form-control" id="trainName" placeholder="Hogwarts Express">
+						</div>
+						<div class="form-group">
+							<label for="dest">Destination</label>
+							<input type="text" class="form-control" id="dest" placeholder="Hogwarts">
+						</div>
+						<div class="form-group">
+							<label for="firstTime">First Train Time</label>
+							<input type="time" class="form-control" id="firstTime" placeholder="12:34">
+						</div>
+						<div class="form-group">
+							<label for="freq">Frequency (min)</label>
+							<input type="number" class="form-control" id="freq" placeholder="15">
+						</div>
+						<button type="submit" class="btn btn-primary" id="submitInfo">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="assets/javascript/jquery-3.3.1.js"></script>
+	<script src="assets/javascript/moment.js"></script>
+	<script src="assets/javascript/trainTime.js"></script>
+
+</body>
+
+</html>
