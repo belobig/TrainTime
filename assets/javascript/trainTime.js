@@ -27,6 +27,8 @@ var tdMinutes;
 var firstTimeConv;
 var timeDiff;
 var tRemainder;
+var getKey;
+var key;
 
 // Clock function to display current time
 function displayTime() {
@@ -67,11 +69,14 @@ database.ref().on("child_added", function (snapshot) {
 	tdFirstTrain = snapshot.val().firstTrain;
 	tdFreq = snapshot.val().freq;
 	firstTimeConv = moment(tdFirstTrain, "hh:mm")//.subtract(1, "years");
-	timeDiff = moment(now).diff(moment(firstTimeConv), "minutes");
+	timeDiff = moment().diff(moment(firstTimeConv), "minutes");
 	tRemainder = timeDiff % tdFreq;
 	tdMinutes = tdFreq - tRemainder;
 	tdNextArrival = moment().add(tdMinutes, "minutes").format("h:mm:ss A");
-
+	key = snapshot.val().dateAdded;
+	// database.ref().push( {
+	// 	_key: snapshot.key
+	// });
 	// tdNextArrival = moment().add(tdFreq, "minutes").format("h:mm A");
 	// console.log(moment());
 
@@ -82,12 +87,16 @@ database.ref().on("child_added", function (snapshot) {
 	// }
 
 
-	updateInfo();
+	$("#trainTable").append("<tr id=" + "'"  + key + "'" + "><td>" + tdName + "</td><td>" + tdDest + "</td><td>" + tdFirstTrain + "</td><td>" + tdFreq + "</td><td>" + tdNextArrival + "</td><td>" + tdMinutes + "</td>" + "<td><input type='submit' value='Remove Train' class='remove-train btn btn-danger btn-sm'></td></tr>");
 	
 });
 
-function updateInfo() {
-	$("#trainTable").append("<tr><td>" + tdName + "</td><td>" + tdDest + "</td><td>" + tdFirstTrain + "</td><td>" + tdFreq + "</td><td>" + tdNextArrival + "</td><td>" + tdMinutes + "</td></tr>");
-}
+
 
 // setInterval(updateInfo, 1000);
+
+$("body").on("click", ".remove-train", function(){
+	$(this).closest ('tr').remove();
+	getKey = $(this).parent().parent().attr('id');
+	database.ref().child(getKey).remove();
+});
