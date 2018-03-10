@@ -9,7 +9,7 @@ var config = {
 
 firebase.initializeApp(config);
 
-
+// Declaring global variables first
 var database = firebase.database();
 
 var name = '';
@@ -29,6 +29,7 @@ var timeDiff;
 var tRemainder;
 var getKey;
 var key;
+var dateAdded;
 
 // Clock function to display current time
 function displayTime() {
@@ -40,7 +41,7 @@ setInterval(displayTime, 1000);
 
 
 $("#submitInfo").on("click", function (event) {
-	// Prevent form from submitting
+	// Prevent form from reloading the page on Submit
 	event.preventDefault();
 
 	// Get the input values
@@ -58,10 +59,12 @@ $("#submitInfo").on("click", function (event) {
 		freq: freq,
 		dateAdded: firebase.database.ServerValue.TIMESTAMP
 	});
-	// console.log(database.ref());
+	
 
 });
+// console.log(database.ref());
 
+// Each time a child, or train, is added to the database, add it to the DOM
 database.ref().on("child_added", function (snapshot) {
 	console.log("I had a child!");
 	tdName = snapshot.val().name;
@@ -72,29 +75,20 @@ database.ref().on("child_added", function (snapshot) {
 	timeDiff = moment().diff(moment(firstTimeConv), "minutes");
 	tRemainder = timeDiff % tdFreq;
 	tdMinutes = tdFreq - tRemainder;
-	tdNextArrival = moment().add(tdMinutes, "minutes").format("h:mm:ss A");
-	key = snapshot.val().dateAdded;
-	// database.ref().push( {
-	// 	_key: snapshot.key
-	// });
-	// tdNextArrival = moment().add(tdFreq, "minutes").format("h:mm A");
-	// console.log(moment());
-
-	// tdMinutes = moment().diff(moment(tdNextArrival), "minutes");
-
-	// if (tdMinutes <=0) {
-	// 	tdTotal = 0;
-	// }
-
+	tdNextArrival = moment().add(tdMinutes, "minutes").format("h:mm A");
+	key = snapshot.Ce.key;
+	console.log(snapshot.Ce.key);// This is how I figured out how to get the key
+	
 
 	$("#trainTable").append("<tr id=" + "'"  + key + "'" + "><td>" + tdName + "</td><td>" + tdDest + "</td><td>" + tdFirstTrain + "</td><td>" + tdFreq + "</td><td>" + tdNextArrival + "</td><td>" + tdMinutes + "</td>" + "<td><input type='submit' value='Remove Train' class='remove-train btn btn-danger btn-sm'></td></tr>");
 	
 });
 
-
+// TODO: Get the Next Arrival and Minutes Away fields to update automatically
 
 // setInterval(updateInfo, 1000);
 
+// Remove the row of train information when the Remove Train button is clicked
 $("body").on("click", ".remove-train", function(){
 	$(this).closest ('tr').remove();
 	getKey = $(this).parent().parent().attr('id');
