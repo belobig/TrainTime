@@ -25,6 +25,7 @@ var tdFreq;
 var tdNextArrival;
 var tdMinutes;
 var firstTimeConv;
+var firstTimeReadable;
 var timeDiff;
 var tRemainder;
 var getKey;
@@ -34,6 +35,7 @@ var minsID;
 var arrivalID;
 var minsIdArray = [];
 var arrivalIdArray = [];
+var rows = [];
 
 
 // Clock function to display current time
@@ -86,12 +88,20 @@ database.ref().on("child_added", function (snapshot) {
 	minsID = 'mins' + key;
 	arrivalID = 'arrival' + key;
 
-	$("#trainTable").append("<tr id=" + "'" + key + "'" + "><td>" + tdName + "</td><td>" + tdDest + "</td><td>" + tdFirstTrain + "</td><td>" + tdFreq + "</td><td class='updateableArrival' id=" + "'" + arrivalID + "'" + ">" + tdNextArrival + "</td><td class='updateableMins' id=" + "'" + minsID + "'" + ">" + tdMinutes + "</td>" + "<td><input type='submit' value='Remove Train' class='remove-train btn btn-danger btn-sm'></td></tr>");
+	firstTimeReadable = moment(firstTimeConv).format("h:mm A");
+
+	if (timeDiff < 1) {
+		tdNextArrival = firstTimeReadable;
+		tdMinutes = moment(firstTimeConv).diff(moment(), "minutes");
+	}
+
+	$("#trainTable").append("<tr id=" + "'" + key + "'" + "><td>" + tdName + "</td><td>" + tdDest + "</td><td>" + firstTimeReadable + "</td><td>" + tdFreq + "</td><td class='updateableArrival' id=" + "'" + arrivalID + "'" + ">" + tdNextArrival + "</td><td class='updateableMins' id=" + "'" + minsID + "'" + ">" + tdMinutes + "</td>" + "<td><input type='submit' value='Remove Train' class='remove-train btn btn-danger btn-sm'></td></tr>");
 	// console.log(minsID + " " + arrivalID);
 	// console.log(snapshot.val());
 	// console.log($("#" + minsID + "").html());
 	minsIdArray.push($("#" + minsID + "").attr('id'));
 	arrivalIdArray.push($("#" + arrivalID + "").attr('id'));
+	sortTable();
 });
 // }
 
@@ -110,6 +120,12 @@ function updateMinutes() {
 			var updtKey = childSnapshot.Ce.key;
 			var updtMinsID = 'mins' + updtKey;
 			var updtArrivalID = 'arrival' + updtKey;
+			var updtFirstTimeReadable = moment(updtfirstTimeConv).format("h:mm A");
+
+			if (updttimeDiff < 1) {
+				updtNextArrival = updtFirstTimeReadable;
+				updtMinutes = moment(updtfirstTimeConv).diff(moment(), "minutes");
+			}
 
 			// console.log(parseInt($("#" + updtMinsID + "").html()));
 			$("#" + updtMinsID + "").html(updtMinutes);
@@ -129,3 +145,39 @@ $("body").on("click", ".remove-train", function () {
 	database.ref().child(getKey).remove();
 });
 
+// To sort items in the table by time, earliest first
+function sortTable() {
+	var table, switching, i, x, y, shouldSwitch;
+	table = document.getElementById("trainTable");
+	switching = true;
+  /*Make a loop that will continue until
+  no switching has been done:*/
+	while (switching) {
+		//start by saying: no switching is done:
+		switching = false;
+		rows = table.getElementsByTagName("TR");
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+		for (i = 1; i < (rows.length - 1); i++) {
+			//start by saying there should be no switching:
+			shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+			x = rows[i].getElementsByTagName("TD")[2];
+			y = rows[i + 1].getElementsByTagName("TD")[2];
+			// console.log("x: " + x.innerHTML + "  y: " + y.innerHTML);
+			//check if the two rows should switch place:
+			if (moment(x.innerHTML, "h:mm A") > moment(y.innerHTML, "h:mm A")) {
+				//if so, mark as a switch and break the loop:
+				shouldSwitch = true;
+				break;
+			}
+		}
+		if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+			rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+			switching = true;
+		}
+	}
+}
